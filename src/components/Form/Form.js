@@ -9,18 +9,28 @@ import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 
 
-export default function Form() {
+export default function Form(props) {
     let navigate = useNavigate();
+    const hideUsersBtn = props.hideUsersBtn;
+    const editMode = props.editMode;
+    const closeFunction = props.closeFunction;
+    const [id, setId] = useState(props.id ? props.id : "")
+    const [cpf, setCPF] = useState(props.cpf ? props.cpf : "")
+    const [tel, setTel] = useState(props.cpf ? props.tel : "")
+    const [name, setName] = useState(props.cpf ? props.name : "")
+    const [email, setEmail] = useState(props.cpf ? props.email : "")
 
-    const [cpf, setCPF] = useState("")
-    const [tel, setTel] = useState("")
-    const [name, setName] = useState("")
-    const [email, setEmail] = useState("")
+    function getRndInteger(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) ) + min;
+      }
 
     const handleSubmit = (evt) =>{
         evt.preventDefault();
+        const randomID = "x" + getRndInteger(1, 9999);
+
         const savedData = localStorage.getItem('users');
         const processedData = {
+            'id': randomID,
             'name': name,
             'cpf': cpf,
             'phone': tel,
@@ -42,6 +52,36 @@ export default function Form() {
         setEmail("");
     }
 
+    const handleSubmitEdit = (evt) =>{
+        evt.preventDefault();
+        const savedData = localStorage.getItem('users');
+        const processedData = {
+            'id': id,
+            'name': name,
+            'cpf': cpf,
+            'phone': tel,
+            'email': email
+        }
+        const parsedData = JSON.parse(savedData)
+        const auxData = parsedData.map((item)=> {
+            if(item.id === id){
+                item = processedData
+            }
+            return item
+        });
+        const stringifyData =  JSON.stringify(auxData);
+        localStorage.setItem("users", stringifyData)
+
+        toast.success('Usuário Alterado');
+        setId("");
+        setCPF("");
+        setTel("");
+        setName("");
+        setEmail("");
+
+        closeFunction(auxData);
+    }
+
     return (
         <Box
             component="form"
@@ -54,7 +94,7 @@ export default function Form() {
                 justifyContent: 'center',
                 padding: '1rem'
             }}
-            onSubmit={handleSubmit}
+            onSubmit={editMode ? handleSubmitEdit : handleSubmit}
         >
             <Paper elevation={3}
                 sx={{
@@ -72,9 +112,16 @@ export default function Form() {
                 },
             }}
                 >
-                <Typography variant="h3" component="div">
-                    Cadastrar novo usuário
-                </Typography>
+                    {
+                        editMode ? 
+                        <Typography variant="h3" component="div">
+                            Editar usuário
+                        </Typography>
+                        :
+                        <Typography variant="h3" component="div">
+                            Cadastrar novo usuário
+                        </Typography>
+                    }
                 
                 <Box sx={{
                     width: '100%',
@@ -149,11 +196,17 @@ export default function Form() {
                                 },
                             }}
                         >
-                            Cadastrar Usuário
+                            {
+                                editMode ? 
+                                "Editar Usuário"
+                                :
+                                "Cadastrar Usuário"
+                            }
                         </Button>
 
                         <Button variant="outlined" color="secondary" 
                             sx={{
+                                display: hideUsersBtn ? 'none' : 'unset',
                                 fontSize: 'clamp(1.2rem, 1.4vw, 1.4rem)',
                                 '@media (max-width: 780px)' : {
                                     width: '100%',
@@ -165,7 +218,6 @@ export default function Form() {
                         </Button>
                     </Box>
                 </Box>
-
             </ Paper>
         </ Box>
     );
