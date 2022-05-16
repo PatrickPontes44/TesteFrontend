@@ -35,7 +35,6 @@ export default function Users() {
     const deleteUser = (id)=>{
         const auxData = data.filter((item)=> item.id !== id);
         const stringifyData = JSON.stringify([auxData]);
-        console.log(auxData)
         if(auxData.length === 0){
             localStorage.removeItem("users");
             setData([])
