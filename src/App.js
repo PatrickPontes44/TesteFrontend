@@ -18,7 +18,7 @@ function App() {
         draggable={true}
       />
       <Header />
-      <BrowserRouter>
+      <BrowserRouter basename={process.env.PUBLIC_URL}>
         <Routes>
           <Route path='/' element={<Register/>} />
           <Route path='/users' element={<Users/>} />
