@@ -123,8 +123,6 @@ export default function Users() {
         }
       });
  
-    console.log(data)
-    
     return (
         <ThemeProvider theme={defaultTheme}>
             <Box sx={{
